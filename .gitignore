@@ -56,3 +56,6 @@ target/
 *.sublime-workspace
 
 .DS_Store
+
+# databases
+*.sqlite3
