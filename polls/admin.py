@@ -14,7 +14,6 @@ class PollAdmin(admin.ModelAdmin):
         (None,               {'fields': ['question']}),
         ('Date information', {'fields': ['pub_date']}),
     ]
-    readonly_fields = ('pub_date',)
     inlines = [ChoiceInline]
     list_display = ('question', 'pub_date', 'was_published_recently')
     list_filter = ['pub_date']
