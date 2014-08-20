@@ -6,14 +6,15 @@ from polls.models import Choice, Poll
 
 class ChoiceInline(admin.TabularInline):
     model = Choice
-    extra = 3
+    extra = 4
 
 
 class PollAdmin(admin.ModelAdmin):
     fieldsets = [
         (None,               {'fields': ['question']}),
-
+        ('Date information', {'fields': ['pub_date']}),
     ]
+    readonly_fields = ('pub_date',)
     inlines = [ChoiceInline]
     list_display = ('question', 'pub_date', 'was_published_recently')
     list_filter = ['pub_date']
