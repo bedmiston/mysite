@@ -5,6 +5,12 @@
 			"name": "Anaconda Python Builder",
 			"selector": "source.python",
 			"shell_cmd": "python -u \"$file\""
+		},
+
+		{
+			"name": "Run Tests",
+			"working_dir": "${project_path}",
+			"cmd": ["python", "manage.py", "test", "--noinput"]
 		}
 	],
 	"folders":
