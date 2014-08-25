@@ -30,14 +30,14 @@ class init {
     service { "nginx":
         ensure => running,
         hasrestart => true,
-        require => Exec['update-apt']
+        require => Package['nginx'],
     }
 
-    # service { "supervisor":
-    #     ensure => running,
-    #     hasrestart => true,
-    #     require => Exec['update-apt']
-    # }
+    service { "supervisor":
+        ensure => running,
+        hasrestart => true,
+        require => Package['nginx'],
+    }
 
     file { "/etc/nginx/nginx.conf":
         owner  => root,
@@ -76,6 +76,6 @@ class init {
         mode   => 644,
         source => "puppet:////vagrant/puppet/files/gunicorn-supervisord.conf",
         require => Package['supervisor'],
-        # notify => Service["supervisor"]
+        notify => Service["supervisor"]
     }
 }
