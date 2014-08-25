@@ -33,12 +33,18 @@ class init {
         require => Exec['update-apt']
     }
 
+    # service { "supervisor":
+    #     ensure => running,
+    #     hasrestart => true,
+    #     require => Exec['update-apt']
+    # }
+
     file { "/etc/nginx/nginx.conf":
         owner  => root,
         group  => root,
         mode   => 644,
         source => "puppet:////vagrant/puppet/files/nginx.conf",
-        require => Exec['update-apt'],
+        require => Package['nginx'],
         notify => Service["nginx"]
     }
 
@@ -47,21 +53,29 @@ class init {
         group  => root,
         mode   => 644,
         source => "puppet:////vagrant/puppet/files/vhost.conf",
-        require => Exec['update-apt'],
+        require => Package['nginx'],
         notify => Service["nginx"]
     }
 
     file { "/etc/nginx/sites-enabled/vagrantsite":
         ensure => symlink,
         target => "/etc/nginx/sites-available/vagrantsite",
-        require => Exec['update-apt'],
+        require => Package['nginx'],
         notify => Service["nginx"]
     }
 
     file { "/etc/nginx/sites-enabled/default":
         ensure => absent,
-        require => Exec['update-apt'],
+        require => Package['nginx'],
         notify => Service["nginx"]
     }
 
+    file { "/etc/supervisor/conf.d/gunicorn.conf":
+        owner  => root,
+        group  => root,
+        mode   => 644,
+        source => "puppet:////vagrant/puppet/files/gunicorn-supervisord.conf",
+        require => Package['supervisor'],
+        # notify => Service["supervisor"]
+    }
 }
