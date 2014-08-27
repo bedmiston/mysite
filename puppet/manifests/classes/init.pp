@@ -33,19 +33,13 @@ class init {
         require => Package['nginx'],
     }
 
-    service { "supervisor":
-        ensure => running,
-        hasrestart => true,
-        require => Package['nginx'],
-    }
-
     file { "/etc/nginx/nginx.conf":
         owner  => root,
         group  => root,
         mode   => 644,
         source => "puppet:////vagrant/puppet/files/nginx.conf",
         require => Package['nginx'],
-        notify => Service["nginx"]
+        notify => Service['nginx']
     }
 
     file { "/etc/nginx/sites-available/vagrantsite":
@@ -54,28 +48,39 @@ class init {
         mode   => 644,
         source => "puppet:////vagrant/puppet/files/vhost.conf",
         require => Package['nginx'],
-        notify => Service["nginx"]
+        notify => Service['nginx']
     }
 
     file { "/etc/nginx/sites-enabled/vagrantsite":
         ensure => symlink,
         target => "/etc/nginx/sites-available/vagrantsite",
         require => Package['nginx'],
-        notify => Service["nginx"]
+        notify => Service['nginx']
     }
 
     file { "/etc/nginx/sites-enabled/default":
         ensure => absent,
         require => Package['nginx'],
-        notify => Service["nginx"]
+        notify => Service['nginx']
+    }
+
+    service { "supervisor":
+        ensure => running,
+        hasrestart => true,
+        require => Package['supervisor'],
     }
 
     file { "/etc/supervisor/conf.d/gunicorn.conf":
         owner  => root,
         group  => root,
-        mode   => 644,
+        mode   => 755,
         source => "puppet:////vagrant/puppet/files/gunicorn-supervisord.conf",
         require => Package['supervisor'],
-        notify => Service["supervisor"]
+    } ->
+    exec { "reread_gunicorn":
+        command => "sudo supervisorctl reread"
+    } ->
+    exec { "start_gunicorn":
+        command => "sudo supervisorctl update"
     }
 }
