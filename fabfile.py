@@ -14,7 +14,7 @@ def vagrant():
 
 def test():
     with settings(warn_only=True):
-        result = local('./manage.py test', capture=True)
+        result = local('python manage.py test', capture=False)
     if result.failed and not confirm("Tests failed. Continue anyway?"):
         abort("Aborting at user request.")
 
