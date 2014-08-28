@@ -37,7 +37,6 @@ def deploy():
     code_dir = '/vagrant/'
     with cd(code_dir):
         run("git pull")
-        run("touch app.wsgi")
 
 
 # def cmd(cmd=""):
