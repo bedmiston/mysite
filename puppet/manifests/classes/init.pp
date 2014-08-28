@@ -13,7 +13,7 @@ class init {
     package {
         ["python", "python-dev", "libjs-jquery", "libjs-jquery-ui",
             "iso-codes", "gettext", "python-pip", "bzr", "libpq-dev", "postgresql",
-            "postgresql-contrib", "nginx", "supervisor", "sqlite3"]:
+            "postgresql-contrib", "nginx", "supervisor", "sqlite3", "git"]:
         ensure => installed,
         require => Exec['update-apt'] # The system update needs to run first
     }
