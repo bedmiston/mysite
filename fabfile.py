@@ -34,6 +34,7 @@ def prepare_deploy():
 
 
 def deploy():
+    prepare_deploy()
     code_dir = '/vagrant/'
     with cd(code_dir):
         run("git pull")
