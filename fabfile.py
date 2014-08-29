@@ -20,10 +20,7 @@ def test():
 
 
 def commit():
-    with settings(warn_only=True):
-        result = local("git add -p && git commit")
-    if result.failed and not confirm("Git commit failed. Continue anyway?"):
-        abort("Aborting at user request.")
+    local("git add -p && git commit")
 
 
 def push():
