@@ -39,6 +39,17 @@ def deploy():
     with cd(code_dir):
         run("git pull")
 
+
+def uname():
+    run('uname -a')
+
+
+def syncdb():
+    code_dir = '/vagrant/'
+    with cd(code_dir):
+        run('python manage.py syncdb')
+
+
 # def cmd(cmd=""):
 #     '''Run a command in the site directory.  Usable from other commands or the CLI.'''
 #     require('site_path')
