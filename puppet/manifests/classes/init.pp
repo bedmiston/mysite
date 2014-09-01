@@ -9,11 +9,17 @@ class init {
         command => "sudo apt-get update",
     }
 
+    exec { "upgrade-apt":
+        command => 'sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade',
+        require => Exec["update-apt"]
+    }
+
     # Let's install the dependecies
     package {
-        ["python", "python-dev", "libjs-jquery", "libjs-jquery-ui",
-            "iso-codes", "gettext", "python-pip", "bzr", "libpq-dev", "postgresql",
-            "postgresql-contrib", "nginx", "supervisor", "sqlite3", "git"]:
+        ["python", "python-dev", "python-virtualenv", "libjs-jquery",
+            "libjs-jquery-ui", "iso-codes", "gettext", "python-pip",
+            "bzr", "libpq-dev", "postgresql", "postgresql-contrib",
+            "nginx", "supervisor", "sqlite3", "git"]:
         ensure => installed,
         require => Exec['update-apt'] # The system update needs to run first
     }
