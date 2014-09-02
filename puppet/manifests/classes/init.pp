@@ -27,7 +27,7 @@ class init {
 
     # Install librarian puppet to manage our
     package { "librarian-puppet":
-        # ensure => "1.3.0",
+        ensure => "1.1.1",
         provider => "gem",
         require => Package["gcc", "build-essential"],
     }
