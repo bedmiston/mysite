@@ -11,17 +11,25 @@ class init {
 
     exec { "upgrade-apt":
         command => 'sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade',
-        require => Exec["update-apt"]
+        require => Exec["update-apt"],
+        timeout => 1800,
     }
 
     # Let's install the dependecies
     package {
         ["python", "python-dev", "python-virtualenv", "libjs-jquery",
-            "libjs-jquery-ui", "iso-codes", "gettext", "python-pip",
+            "libjs-jquery-ui", "iso-codes", "gcc", "gettext", "python-pip",
             "bzr", "libpq-dev", "postgresql", "postgresql-contrib",
-            "nginx", "supervisor", "sqlite3", "git"]:
+            "nginx", "supervisor", "sqlite3", "git", "build-essential"]:
         ensure => installed,
         require => Exec['update-apt'] # The system update needs to run first
+    }
+
+    # Install librarian puppet to manage our
+    package { "librarian-puppet":
+        # ensure => "1.3.0",
+        provider => "gem",
+        require => Package["gcc", "build-essential"],
     }
 
     # Let's install the project dependecies from pip
@@ -88,5 +96,35 @@ class init {
     } ->
     exec { "start_gunicorn":
         command => "sudo supervisorctl update"
+    }
+
+    group { "webapps":
+        ensure => present,
+        system => true,
+    }
+
+    user { "mysite":
+        ensure => present,
+        system => true,
+        home => "/webapps/mysite",
+        shell => "/bin/bash",
+        groups => webapps,
+        require => Group["webapps"],
+    }
+
+    file { "/webapps":
+        ensure => directory,
+        owner => mysite,
+        group => webapps,
+        mode => 644,
+        require => User["mysite"],
+    }
+
+    file { "/webapps/mysite":
+        ensure => directory,
+        owner => mysite,
+        group => webapps,
+        mode => 644,
+        require => File["/webapps"],
     }
 }

@@ -63,3 +63,9 @@ target/
 
 #Vagrant
 .vagrant/
+.tmp/
+modules/
+
+.librarian/
+Puppetfile.lock
+*.deb
