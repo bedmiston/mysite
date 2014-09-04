@@ -10,8 +10,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "puppetlabs-precise32"
-  config.vm.box_url = "http://puppet-vagrant-boxes.puppetlabs.com/ubuntu-server-12042-x64-vbox4210.box"
+  # config.vm.box = "puppetlabs-precise32"
+  config.vm.box = "devserver"
+  # config.vm.box_url = "http://puppet-vagrant-boxes.puppetlabs.com/ubuntu-server-12042-x64-vbox4210.box"
+  config.vm.box_url = "hashicorp/precise32"
   config.vm.network "forwarded_port", guest: 8000, host: 8000
   config.vm.network "private_network", ip: "33.33.33.10"
 
@@ -26,12 +28,18 @@ wget https://apt.puppetlabs.com/puppetlabs-release-precise.deb
 dpkg -i puppetlabs-release-precise.deb
 apt-get update
 puppet resource package puppet ensure=latest
+apt-get install curl -y
 SCRIPT
   config.vm.provision :shell, :inline => $puppet_update_script
+
+  config.vm.provision :shell, :path => "install-rvm.sh",  :args => "stable"
+  config.vm.provision :shell, :path => "install-ruby.sh", :args => "1.9.3"
 
   config.vm.provision :puppet do |puppet|
       puppet.manifests_path = "puppet/manifests"
       puppet.manifest_file  = "vagrant.pp"
+      puppet.temp_dir = "/tmp"
+      puppet.options = ['--modulepath=/tmp/modules']
   end
 
 

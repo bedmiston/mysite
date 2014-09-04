@@ -69,3 +69,5 @@ modules/
 .librarian/
 Puppetfile.lock
 *.deb
+.tmp/
+modules/
