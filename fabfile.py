@@ -6,6 +6,7 @@ from fabric.contrib.console import confirm
 def vagrant():
     # change from the default user to 'vagrant'
     env.user = 'vagrant'
+    env.site_user = 'mysite'
     # connect to the port-forwarded ssh
     env.hosts = ['127.0.0.1:2222']
     # Set the site path
@@ -41,11 +42,13 @@ def prepare_deploy():
 def deploy():
     '''Deploy the site.'''
     prepare_deploy()
-    with cd(env.site_path):
-        run("git pull")
+    pull()
     syncdb()
     collectstatic()
 
+def pull():
+    with cd(env.site_path):
+        sudo("git pull", user=env.site_user)
 
 def uname():
     '''Run uname on the server.'''
@@ -55,10 +58,10 @@ def uname():
 def syncdb():
     '''Sync the database.'''
     with cd(env.site_path):
-        run('python manage.py syncdb --noinput')
+        sudo('python manage.py syncdb --noinput', user=env.site_user)
 
 
 def collectstatic():
     '''Collect static media.'''
     with cd(env.site_path):
-        sudo('python manage.py collectstatic --noinput')
+        sudo('python manage.py collectstatic --noinput', user=env.site_user)

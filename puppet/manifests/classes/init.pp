@@ -120,11 +120,20 @@ class init {
         require => User["mysite"],
     }
 
+    file { "/webapps/mysite":
+        ensure => directory,
+        owner => mysite,
+        group => webapps,
+        mode => 644,
+        require => File["/webapps"],
+    }
+
     vcsrepo { "/webapps/mysite":
         ensure   => present,
         provider => git,
         source   => "https://github.com/bedmiston/mysite.git",
-        require => File["/webapps"],
+        user => 'mysite',
+        require => File["/webapps/mysite"],
     }
     # file { "/tmp/Puppetfile":
     #     mode   => 755,
