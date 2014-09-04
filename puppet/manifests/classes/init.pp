@@ -26,11 +26,11 @@ class init {
     }
 
     # Install librarian puppet to manage our
-    package { "librarian-puppet":
-        ensure => "1.1.3",
-        provider => "gem",
-        require => Package["gcc", "build-essential"],
-    }
+    # package { "librarian-puppet":
+    #     ensure => "1.1.3",
+    #     provider => "gem",
+    #     require => Package["gcc", "build-essential"],
+    # }
 
     # Let's install the project dependecies from pip
     exec { "pip-install-requirements":
@@ -120,22 +120,20 @@ class init {
         require => User["mysite"],
     }
 
-    file { "/webapps/mysite":
-        ensure => directory,
-        owner => mysite,
-        group => webapps,
-        mode => 644,
+    vcsrepo { "/webapps/mysite":
+        ensure   => present,
+        provider => git,
+        source   => "https://github.com/bedmiston/mysite.git",
         require => File["/webapps"],
     }
+    # file { "/tmp/Puppetfile":
+    #     mode   => 755,
+    #     source => "puppet:////vagrant/puppet/Puppetfile",
+    # }
 
-    file { "/tmp/Puppetfile":
-        mode   => 755,
-        source => "puppet:////vagrant/puppet/Puppetfile",
-    }
-
-    exec { "install-puppet-packages":
-        command => "librarian-puppet install --verbose",
-        require => [Package['librarian-puppet'], File['/tmp/Puppetfile']],
-        cwd => "/tmp"
-    }
+    # exec { "install-puppet-packages":
+    #     command => "librarian-puppet install --verbose",
+    #     require => [Package['librarian-puppet'], File['/tmp/Puppetfile']],
+    #     cwd => "/tmp"
+    # }
 }

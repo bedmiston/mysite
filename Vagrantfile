@@ -22,18 +22,27 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     vb.customize ["modifyvm", :id, "--memory", "1024"]
   end
 
+
 # Update puppet to latest version before using puppet provisioning.
   $puppet_update_script = <<SCRIPT
 wget https://apt.puppetlabs.com/puppetlabs-release-precise.deb
 dpkg -i puppetlabs-release-precise.deb
 apt-get update
 puppet resource package puppet ensure=latest
-apt-get install curl -y
+apt-get install -y curl
 SCRIPT
   config.vm.provision :shell, :inline => $puppet_update_script
-
   config.vm.provision :shell, :path => "install-rvm.sh",  :args => "stable"
   config.vm.provision :shell, :path => "install-ruby.sh", :args => "1.9.3"
+
+  $librarian_puppet_update_script = <<SCRIPT
+apt-get install -y gcc git build-essential
+gem install puppet -v 3.6 --no-rdoc --no-ri
+gem install librarian-puppet -v 1.1.3 --no-rdoc --no-ri
+cp /vagrant/puppet/Puppetfile /tmp
+cd /tmp && librarian-puppet install --verbose
+SCRIPT
+  config.vm.provision :shell, :inline => $librarian_puppet_update_script
 
   config.vm.provision :puppet do |puppet|
       puppet.manifests_path = "puppet/manifests"

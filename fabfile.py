@@ -2,17 +2,19 @@ from __future__ import with_statement
 from fabric.api import env, local, settings, abort, require, run, cd, sudo
 from fabric.contrib.console import confirm
 
+
 def vagrant():
     # change from the default user to 'vagrant'
     env.user = 'vagrant'
     # connect to the port-forwarded ssh
     env.hosts = ['127.0.0.1:2222']
     # Set the site path
-    env.site_path = '/vagrant/'
+    env.site_path = '/webapps/mysite/'
 
     # use vagrant ssh key
     result = local('vagrant ssh-config | grep IdentityFile', capture=True)
     env.key_filename = result.split()[1]
+
 
 def test():
     with settings(warn_only=True):
@@ -41,6 +43,8 @@ def deploy():
     prepare_deploy()
     with cd(env.site_path):
         run("git pull")
+    syncdb()
+    collectstatic()
 
 
 def uname():
@@ -52,6 +56,7 @@ def syncdb():
     '''Sync the database.'''
     with cd(env.site_path):
         run('python manage.py syncdb --noinput')
+
 
 def collectstatic():
     '''Collect static media.'''
