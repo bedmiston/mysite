@@ -145,4 +145,24 @@ class init {
     #     require => [Package['librarian-puppet'], File['/tmp/Puppetfile']],
     #     cwd => "/tmp"
     # }
+    #
+    # class { 'python':
+    #     version    => 'system',
+    #     pip        => true,
+    #     dev        => true,
+    #     virtualenv => true,
+    #     gunicorn   => false,
+    # }
+
+    # python::virtualenv { '/webapps/mysite':
+    #     ensure       => present,
+    #     version      => 'system',
+    #     requirements => '/webapps/mysite/requirements.txt',
+    #     systempkgs   => true,
+    #     venv_dir     => 'webapps/mysite',
+    #     owner        => 'mysite',
+    #     group        => 'webapps',
+    #     cwd          => '/webapps/mysite',
+    #     timeout      => 0,
+    # }
 }
