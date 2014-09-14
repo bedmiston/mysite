@@ -17,20 +17,12 @@ class init {
 
     # Let's install the dependecies
     package {
-        ["python", "python-dev", "python-virtualenv", "libjs-jquery",
-            "libjs-jquery-ui", "iso-codes", "gcc", "gettext", "python-pip",
-            "bzr", "libpq-dev", "postgresql", "postgresql-contrib",
-            "nginx", "supervisor", "sqlite3", "git", "build-essential"]:
+        ["libjs-jquery", "libjs-jquery-ui", "iso-codes", "gcc", "gettext",
+            "bzr", "libpq-dev", "nginx", "supervisor", "sqlite3", "git",
+            "build-essential"]:
         ensure => installed,
         require => Exec['update-apt'] # The system update needs to run first
     }
-
-    # Install librarian puppet to manage our
-    # package { "librarian-puppet":
-    #     ensure => "1.1.3",
-    #     provider => "gem",
-    #     require => Package["gcc", "build-essential"],
-    # }
 
     # Let's install the project dependecies from pip
     exec { "pip-install-requirements":
@@ -120,14 +112,6 @@ class init {
         require => User["mysite"],
     }
 
-    file { "/webapps/mysite":
-        ensure => directory,
-        owner => mysite,
-        group => webapps,
-        mode => 644,
-        require => File["/webapps"],
-    }
-
     vcsrepo { "/webapps/mysite":
         ensure   => present,
         provider => git,
@@ -135,34 +119,36 @@ class init {
         user => 'mysite',
         require => File["/webapps/mysite"],
     }
-    # file { "/tmp/Puppetfile":
-    #     mode   => 755,
-    #     source => "puppet:////vagrant/puppet/Puppetfile",
-    # }
 
-    # exec { "install-puppet-packages":
-    #     command => "librarian-puppet install --verbose",
-    #     require => [Package['librarian-puppet'], File['/tmp/Puppetfile']],
-    #     cwd => "/tmp"
-    # }
-    #
-    # class { 'python':
-    #     version    => 'system',
-    #     pip        => true,
-    #     dev        => true,
-    #     virtualenv => true,
-    #     gunicorn   => false,
-    # }
+    file { "/tmp/Puppetfile":
+        mode   => 755,
+        source => "puppet:////vagrant/puppet/Puppetfile",
+    }
 
-    # python::virtualenv { '/webapps/mysite':
-    #     ensure       => present,
-    #     version      => 'system',
-    #     requirements => '/webapps/mysite/requirements.txt',
-    #     systempkgs   => true,
-    #     venv_dir     => 'webapps/mysite',
-    #     owner        => 'mysite',
-    #     group        => 'webapps',
-    #     cwd          => '/webapps/mysite',
-    #     timeout      => 0,
-    # }
+    class { 'python':
+        version    => 'system',
+        pip        => true,
+        dev        => true,
+        virtualenv => true,
+        gunicorn   => false,
+    }
+
+    python::virtualenv { '/webapps/mysite':
+        ensure       => present,
+        version      => 'system',
+        requirements => '/webapps/mysite/requirements.txt',
+        systempkgs   => true,
+        venv_dir     => '/webapps/mysite',
+        owner        => 'mysite',
+        group        => 'webapps',
+        cwd          => '/webapps/mysite',
+        timeout      => 0,
+    }
+
+    class { 'postgresql::server': }
+
+    postgresql::server::db { 'mysite':
+        user     => 'mysite',
+        password => postgresql_password('mysite', '1234abcd'),
+    }
 }
