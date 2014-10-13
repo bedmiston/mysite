@@ -147,8 +147,20 @@ class init {
 
     class { 'postgresql::server': }
 
-    postgresql::server::db { 'mysite':
-        user     => 'mysite',
-        password => postgresql_password('mysite', '1234abcd'),
+    postgresql::server::role {'mysite':
+        password_hash => postgresql_password('mysite', '1234abcd'),
+        createdb => 'true',
+    }
+
+    postgresql::server::role {'vagrant':
+        createdb => 'true',
+    }
+
+    postgresql::server::database { 'mysite': }
+
+    postgresql::server::database_grant { 'mysite':
+        privilege => 'ALL',
+        db => 'mysite',
+        role => 'mysite',
     }
 }
