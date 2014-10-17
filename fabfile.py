@@ -16,21 +16,8 @@ def vagrant():
     result = local('vagrant ssh-config | grep IdentityFile', capture=True)
     env.key_filename = result.split()[1]
 
-def vdev():
-    # change from the default user to 'vagrant'
-    env.user = 'vagrant'
-    env.site_user = 'mysite'
-    # connect to the port-forwarded ssh
-    env.hosts = ['127.0.0.1:2222']
-    # Set the site path
-    env.site_path = '/vagrant/'
-    # use vagrant ssh key
-    result = local('vagrant ssh-config | grep IdentityFile', capture=True)
-    env.key_filename = result.split()[1]
-
-
 def test():
-    with cd(env.site_path):
+    with cd('/vagrant/'):
         with settings(warn_only=True):
             result = run('python manage.py test')
         if result.failed and not confirm("Tests failed. Continue anyway?"):
